@@ -1,4 +1,4 @@
-# popMathematicalModels
+# lotka_experiments
 
 A population dynamics model built upon the lotka-volterra equations, with the addition of stochasticity from a normal distribution, a third trophic level, density dependent growth for autotrophs and a few more constants to modulate the interactions between the primary and secondary consumers.
 
