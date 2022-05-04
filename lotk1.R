@@ -37,7 +37,7 @@ library(tidyverse)
   stochast <- unlist(lapply( rnorm(10000,mean = 0, sd = 0.5), round),use.names = FALSE)  
   
   
-cycles <- 5e4 # number of time steps
+cycles <- 44.1e3 # number of time steps
 
 #initial population sizes
 x <- 500

@@ -1,6 +1,6 @@
 # lotka_experiments
 
-A population dynamics model built upon the lotka-volterra equations, with the addition of stochasticity from a normal distribution, a third trophic level, density dependent growth for autotrophs and a few more constants to modulate the interactions between the primary and secondary consumers.
+A population dynamics model built upon the lotka-volterra equations, with the addition of stochasticity from a normal distribution, a third trophic level, density dependent growth for autotrophs and a few more constants to modulate the interactions between the primary and secondary consumers. It also contains some code to scale the values to the range[-1,1] so that the data can be written to an audio file ;)
 
 tabacwoman May 2022  
   
@@ -22,7 +22,9 @@ CONSTANTS
  z = apex predator population  
 dt = delta time  
   
-  
+ ENVIRONMENT PARAMETERS:  
+ cycles = number of time steps before halting the simulation.  
+
  EQUATIONS:  
   
  dx/dt = ax - (bxy + k(x^2))  
