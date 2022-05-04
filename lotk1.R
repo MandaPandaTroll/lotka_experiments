@@ -30,10 +30,12 @@ library(tidyverse)
 # y = predator population
 # z = apex predator population
 
+
+#Simulation setup
 {
-  preyEq <- function(a, b, k, x, y, dt) return(x+ (a*x - (b*x*y + k*(x^2))/dt))
-  predEq <- function(d, c, q, x, y, z, dt) return(y+ (d*x*y -( c*y +q*z))/dt)
-  apexEq <- function(m, w, z, y, dt) return(z+ (m*z*y - w*z)/dt)
+  preyEq <- function(a, b, k, x, y, dt) return(x+ (a*x - (b*x*y + k*(x^2))/dt)+sample(stochast,1))
+  predEq <- function(d, c, q, x, y, z, dt) return(y+ (d*x*y -(( c*y +q*z))/dt)+sample(stochast,1))
+  apexEq <- function(m, w, z, y, dt) return(z+ ((m*z*y - w*z)/dt)+sample(stochast,1))
   
   
   stochast <- unlist(lapply( rnorm(10000,mean = 0, sd = 0.5), round),use.names = FALSE)  
@@ -44,7 +46,7 @@ cycles <- 4.41e4 # number of time steps
 #initial population sizes
 x <- 500
 y <- 200
-z <- 50
+z <- 100
 
 Pops <- data.frame(prey = c(x,x,x), predator = c(y,y,y), apex = c(z,z,z))
 
@@ -56,7 +58,7 @@ Pops[0,3] <- z
 Pops[1,3] <- z
 }
 
-
+#Run simulation
 for (i in 2:cycles){
   
   if(Pops[i-1,1] > 0){x <- Pops[i-1,1]}else{x <- 0}
@@ -68,13 +70,21 @@ for (i in 2:cycles){
   if(z < 0){z <- 0}
     
     Pops[i,1] <-  preyEq(1e-2, 3e-5, 1e-5, x, y,1.0 ) +sample(stochast,1)
-    Pops[i,2] <-  predEq(7e-7, 2e-4, 1.5e-4, x, y, z, 1.0 ) +sample(stochast,1)
-    Pops[i,3] <-  apexEq(2e-6, 5e-4, z, y,1.0 ) +sample(stochast,1)
+    Pops[i,2] <-  predEq(7e-7, 2e-4, 1.7e-4, x, y, z, 1.0 ) +sample(stochast,1)
+    Pops[i,3] <-  apexEq(2e-7, 1e-4, z, y,1.0 ) +sample(stochast,1)
     
     
     
-    
-    }
+}
+
+
+
+
+  
+
+  
+  
+  
   
 
 #Plot of population sizes
@@ -130,4 +140,7 @@ savewav(normpops$prey*0.75, f=44100)
 savewav(normpops$predator*0.75, f=44100)
 savewav(normpops$apex*0.75, f=44100)
 savewav(mixedwave$amplitude*0.75, f=44100)
+
+
+  
 
