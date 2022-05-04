@@ -6,7 +6,9 @@ rm(list=ls())
 
 library(ggplot2)
 library(tidyverse)
-
+#Optional, for audio file out:
+#install.packages("seewave")
+#library(seewave)
 
 
 
@@ -37,7 +39,7 @@ library(tidyverse)
   stochast <- unlist(lapply( rnorm(10000,mean = 0, sd = 0.5), round),use.names = FALSE)  
   
   
-cycles <- 44.1e3 # number of time steps
+cycles <- 3*4.41e4 # number of time steps
 
 #initial population sizes
 x <- 500
@@ -106,3 +108,25 @@ normpops_gathered <- normpops_gathered %>%
 ggplot(normpops_gathered, aes(x = t, y = individuals)) + 
   geom_line(aes(color = species))+
   scale_color_manual(values = c("red", "blue","forestgreen"))+theme_bw()}
+
+
+
+
+
+
+
+
+
+#Optional audio file stuff  
+  
+{
+mixedwave <- data.frame(amplitude = (normpops$prey + normpops$predator + normpops$apex))
+  mixedwave$amplitude <- 2*mixedwave$amplitude / max(mixedwave$amplitude) -1
+  
+  plot(mixedwave$amplitude, type = "l")
+}
+savewav(normpops$prey*0.75, f=44100)
+savewav(normpops$predator*0.75, f=44100)
+savewav(normpops$apex*0.75, f=44100)
+savewav(mixedwave$amplitude*0.75, f=44100)
+

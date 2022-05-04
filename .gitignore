@@ -2,3 +2,10 @@
 .Rhistory
 .RData
 .Ruserdata
+.wav
+normpops$prey_data
+mixedwave$amplitude.wav
+normpops$apex.wav
+normpops$predator.wav
+normpops$prey.wav
+.DS_Store
