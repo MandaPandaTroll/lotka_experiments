@@ -20,3 +20,23 @@ CONSTANTS
  x = prey population
  y = predator population
  z = apex predator population
+dt = delta time
+ 
+ 
+ EQUATIONS:
+ 
+ dx/dt = ax - (bxy + k(x^2))
+ 
+=> x(t) = x(t-1) + (dx/dt)
+ 
+ 
+ 
+ dy/dt = dxy - (cy + qz)
+ 
+=> y(t) = y(t-1) + (dy/dt)
+  
+  
+  
+ dz/dt = mzy - wz
+ 
+=> z(t) = z(t-1) + (dz/dt)
