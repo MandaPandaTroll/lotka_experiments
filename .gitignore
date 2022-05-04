@@ -9,3 +9,8 @@ normpops$apex.wav
 normpops$predator.wav
 normpops$prey.wav
 .DS_Store
+mixedwave$amplitude * 0.75.wav
+normpops$apex * 0.75.wav
+normpops$predator * 0.75.wav
+normpops$prey * 0.75.wav
+normpops$prey.aup
