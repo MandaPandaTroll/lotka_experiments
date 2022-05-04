@@ -39,7 +39,7 @@ library(tidyverse)
   stochast <- unlist(lapply( rnorm(10000,mean = 0, sd = 0.5), round),use.names = FALSE)  
   
   
-cycles <- 3*4.41e4 # number of time steps
+cycles <- 4.41e4 # number of time steps
 
 #initial population sizes
 x <- 500
@@ -69,7 +69,7 @@ for (i in 2:cycles){
     
     Pops[i,1] <-  preyEq(1e-2, 3e-5, 1e-5, x, y,1.0 ) +sample(stochast,1)
     Pops[i,2] <-  predEq(7e-7, 2e-4, 1.5e-4, x, y, z, 1.0 ) +sample(stochast,1)
-    Pops[i,3] <-  apexEq(5e-6, 8e-4, z, y,1.0 ) +sample(stochast,1)
+    Pops[i,3] <-  apexEq(2e-6, 5e-4, z, y,1.0 ) +sample(stochast,1)
     
     
     
@@ -88,7 +88,8 @@ Pops_gathered <- Pops_gathered %>%
 
 ggplot(Pops_gathered, aes(x = t, y = individuals)) + 
   geom_line(aes(color = species))+
-  scale_color_manual(values = c("red", "blue","forestgreen"))+theme_bw()}
+  scale_color_manual(values = c("red", "blue","forestgreen"))+theme_bw()
+}
 
 
 #scaled plot of population sizes [-1,1], can be used to convert the data into audio files.
