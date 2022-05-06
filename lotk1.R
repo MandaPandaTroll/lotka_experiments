@@ -33,45 +33,93 @@ library(tidyverse)
 
 #Simulation setup
 {
-  preyEq <- function(a, b, k, x, y, dt) return(x+ (a*x - (b*x*y + k*(x^2))/dt)+sample(stochast,1))
-  predEq <- function(d, c, q, x, y, z, dt) return(y+ (d*x*y -(( c*y +q*z))/dt)+sample(stochast,1))
-  apexEq <- function(m, w, z, y, dt) return(z+ ((m*z*y - w*z)/dt)+sample(stochast,1))
+  e = exp(1)
+  stochast_prey <- unlist(lapply( rnorm(10000,mean = 0, sd = e*2), round),use.names = FALSE)  
+  
+  stochast_predator <- unlist(lapply( rnorm(10000,mean = 0, sd = 0.5), round),use.names = FALSE) 
+  
+  stochast_apex <- unlist(lapply( rnorm(10000,mean = 0, sd = 0.5), round),use.names = FALSE)  
   
   
-  stochast <- unlist(lapply( rnorm(10000,mean = 0, sd = 0.5), round),use.names = FALSE)  
+  #Density dependent growth:
+  # dN/dt = r*N(1-aN)
+  # where r = intrinsic growth rate
+  # a = 1/k
+  # and k = carrying capacity
+  preyEq <- function(r, b, k, x, y){
+    
+    s <- sample(stochast_prey,1)
+    a <- 1/k
+    D <- (r*x)*(1 - (a*x))
+    L <- 0 - (b*x*y)
+    x <- (x + D + L + s)
+    
+    if(x < 0){x <- 0}
+    return(x)
+  }
+  
+  predEq <- function(r, c, q, x, y, z){
+    s <- sample(stochast_predator,1)
+    L <- 0 - (c*y)
+    P <- 0 - (q*z)
+    G <- 0 + (r*x*y)
+    y <- (y + L + P + G + s)
+    if(y < 0){y <- 0}
+    return(y)
+  }
+    
+  
+  apexEq <- function(r, w, z, y) {
+    s <- sample(stochast_apex,1)
+    L <- 0 - (w*z)
+    G <- 0 + (r*y*z)
+    z <- (z + L + G + s)
+   if(z < 0){z <- 0}
+   return(z)
+  }
+    
   
   
-cycles <- 4.41e4 # number of time steps
+
+  
+  
+cycles <- 4.41e5 # number of time steps
 
 #initial population sizes
-x <- 500
-y <- 200
-z <- 100
+x <- 1000
+y <- 500
+z <- 150
 
-Pops <- data.frame(prey = c(x,x,x), predator = c(y,y,y), apex = c(z,z,z))
 
-Pops[0,1] <- x
-Pops[1,1] <- x
-Pops[0,2] <- y
-Pops[1,2] <- y
-Pops[0,3] <- z
-Pops[1,3] <- z
+prey = c(x,x,x)
+predator = c(y,y,y)
+apex = c(z,z,z)
 }
+
+
 
 #Run simulation
 for (i in 2:cycles){
   
-  if(Pops[i-1,1] > 0){x <- Pops[i-1,1]}else{x <- 0}
-  if(Pops[i-1,2] > 0){y <- Pops[i-1,2]}else{y <- 0}
-  if(Pops[i-1,3] > 0){z <- Pops[i-1,3]}else{z <- 0}
+  #if(Pops[i-1,1] > 0){x <- Pops[i-1,1]}else{x <- 0}
+  #if(Pops[i-1,2] > 0){y <- Pops[i-1,2]}else{y <- 0}
+  #if(Pops[i-1,3] > 0){z <- Pops[i-1,3]}else{z <- 0}
+  
+  x <- prey[i-1]
+  y <- predator[i-1]
+  z <- apex[i-1]
                
-  if(x < 0){x <- 0}
-  if(y < 0){y <- 0} 
-  if(z < 0){z <- 0}
+  
+    prey[i]     <- preyEq(5e-3, 6e-6, 1e4, x, y ) 
     
-    Pops[i,1] <-  preyEq(1e-2, 3e-5, 1e-5, x, y,1.0 ) +sample(stochast,1)
-    Pops[i,2] <-  predEq(7e-7, 2e-4, 1.7e-4, x, y, z, 1.0 ) +sample(stochast,1)
-    Pops[i,3] <-  apexEq(2e-7, 1e-4, z, y,1.0 ) +sample(stochast,1)
+    predator[i] <- predEq(1e-6, 1e-3, 9e-4, x, y, z ) 
+      
+    apex[i]     <- apexEq(1.5e-6,1.1e-3, z, y )
+      
+    
+    #Pops[i,1] <-  preyEq(1e-2, 3e-5, 1e-5, x, y,1.0 ) +sample(stochast,1)
+    #Pops[i,2] <-  predEq(7e-7, 2e-4, 1.7e-4, x, y, z, 1.0 ) +sample(stochast,1)
+    #Pops[i,3] <-  apexEq(2e-7, 1e-4, z, y,1.0 ) +sample(stochast,1)
     
     
     
@@ -80,15 +128,10 @@ for (i in 2:cycles){
 
 
 
-  
-
-  
-  
-  
-  
 
 #Plot of population sizes
 {
+  Pops <- data.frame(prey, predator, apex)
   Pops_gathered <- Pops%>%mutate(t = seq(1:length(Pops$prey)))
 
 Pops_gathered <- Pops_gathered %>%
@@ -96,9 +139,11 @@ Pops_gathered <- Pops_gathered %>%
   gather(key = "species", value = "individuals", -t)
 
 
-ggplot(Pops_gathered, aes(x = t, y = individuals)) + 
+ggplot(Pops_gathered, aes(x = t, y =individuals)) + 
   geom_line(aes(color = species))+
   scale_color_manual(values = c("red", "blue","forestgreen"))+theme_bw()
+
+
 }
 
 
