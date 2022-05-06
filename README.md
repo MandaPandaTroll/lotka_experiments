@@ -4,41 +4,40 @@ A population dynamics model built upon the lotka-volterra equations, with the ad
 
 tabacwoman May 2022  
   
-CONSTANTS  
- a = intrinsic growth rate (prey)  
- b = predation and other population loss coefficient (prey)  
- k = density dependent growth coefficient (prey)  
-  
- c = other population loss coefficient (predator)  
- d = intrinsic growth rate (predator)  
- q = predation coefficient (predator)  
-  
- m = intrinsic growth rate (apex predator)  
- w = population loss coefficient (apex predator)  
-  
- VARIABLES  
- x = prey population  
- y = predator population  
+CONSTANTS
+ r = intrinsic growth rate 
+ b = predation and other population loss coefficient (prey)
+ k = carrying capacity
+
+ c = other population loss coefficient (predator)
+ q = predation coefficient (predator)
+
+ w = population loss coefficient (apex predator)
+
+ VARIABLES
+ x = prey population
+ y = predator population
  z = apex predator population  
-dt = delta time  
   
  ENVIRONMENT PARAMETERS:  
  cycles = number of time steps before halting the simulation.  
 
- EQUATIONS:  
+ EQUATIONS: 
+  s = normally distributed value with mean = 0 and varying sd.
+  a = 1/k
   
- dx/dt = ax - (bxy + k(x^2))  
-   
+  dx/dt = rx(1-ax) - bxy + s
+  
 => x(t) = x(t-1) + (dx/dt)  
   
   
   
- dy/dt = dxy - (cy + qz)  
+ dy/dt = rxy - (cy + qz) + s
   
 => y(t) = y(t-1) + (dy/dt)  
    
    
    
- dz/dt = mzy - wz  
+ dz/dt = ryz - wz + s
    
 => z(t) = z(t-1) + (dz/dt)  

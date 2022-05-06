@@ -14,15 +14,14 @@ library(tidyverse)
 
 
 #CONSTANTS
-# a = intrinsic growth rate (prey)
+# r = intrinsic growth rate 
 # b = predation and other population loss coefficient (prey)
-# k = density dependent growth coefficient (prey)
+# k = carrying capacity
 
 # c = other population loss coefficient (predator)
-# d = intrinsic growth rate (predator)
 # q = predation coefficient (predator)
 
-# m = intrinsic growth rate (apex predator)
+# r = intrinsic growth rate (apex predator)
 # w = population loss coefficient (apex predator)
 
 # VARIABLES
@@ -83,7 +82,7 @@ library(tidyverse)
 
   
   
-cycles <- 4.41e5 # number of time steps
+cycles <- 4.41e7 # number of time steps
 
 #initial population sizes
 x <- 1000
@@ -121,17 +120,17 @@ for (i in 2:cycles){
     #Pops[i,2] <-  predEq(7e-7, 2e-4, 1.7e-4, x, y, z, 1.0 ) +sample(stochast,1)
     #Pops[i,3] <-  apexEq(2e-7, 1e-4, z, y,1.0 ) +sample(stochast,1)
     
-    
+
     
 }
 
 
 
+Pops <- data.frame(prey, predator, apex)
 
 
 #Plot of population sizes
 {
-  Pops <- data.frame(prey, predator, apex)
   Pops_gathered <- Pops%>%mutate(t = seq(1:length(Pops$prey)))
 
 Pops_gathered <- Pops_gathered %>%
@@ -147,20 +146,22 @@ ggplot(Pops_gathered, aes(x = t, y =individuals)) +
 }
 
 
+
+#scaled population sizes [-1,1], can be used to convert the data into audio files.
+{normpops <- Pops
+  normpops$prey <- 2*normpops$prey/max(normpops$prey) -1
+  normpops$predator <- 2*normpops$predator/max(normpops$predator) -1
+  normpops$apex <- 2*normpops$apex/max(normpops$apex) -1
+  
+  normpops_gathered <- normpops%>%mutate(t = seq(1:length(normpops$prey)))
+  
+  normpops_gathered <- normpops_gathered %>%
+    select(t, prey, predator, apex) %>%
+    gather(key = "species", value = "individuals", -t)}
+
+
 #scaled plot of population sizes [-1,1], can be used to convert the data into audio files.
 {
-normpops <- Pops
-normpops$prey <- 2*normpops$prey/max(normpops$prey) -1
-normpops$predator <- 2*normpops$predator/max(normpops$predator) -1
-normpops$apex <- 2*normpops$apex/max(normpops$apex) -1
-
-normpops_gathered <- normpops%>%mutate(t = seq(1:length(normpops$prey)))
-
-normpops_gathered <- normpops_gathered %>%
-  select(t, prey, predator, apex) %>%
-  gather(key = "species", value = "individuals", -t)
-
-
 ggplot(normpops_gathered, aes(x = t, y = individuals)) + 
   geom_line(aes(color = species))+
   scale_color_manual(values = c("red", "blue","forestgreen"))+theme_bw()}
@@ -179,13 +180,13 @@ ggplot(normpops_gathered, aes(x = t, y = individuals)) +
 mixedwave <- data.frame(amplitude = (normpops$prey + normpops$predator + normpops$apex))
   mixedwave$amplitude <- 2*mixedwave$amplitude / max(mixedwave$amplitude) -1
   
-  plot(mixedwave$amplitude, type = "l")
-}
+  
+
 savewav(normpops$prey*0.75, f=44100)
 savewav(normpops$predator*0.75, f=44100)
 savewav(normpops$apex*0.75, f=44100)
 savewav(mixedwave$amplitude*0.75, f=44100)
-
+}
 
   
 
